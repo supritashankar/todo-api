@@ -31,6 +31,26 @@ class TodoView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class TodoDetailView(APIView):
+
+    def get(self, request, todo_id):
+        print 'HERE', todo_id
+        try:
+            todo = Todo.objects.get(id=todo_id)
+        except:
+            return HttpResponse(status=404)
+        serializer = TodoSerializer(todo, context={'request': request})
+        return Response(serializer.data)
+
+    def delete(self, request, todo_id):
+        print todo_id
+        try:
+            todo = Todo.objects.get(id=todo_id)
+        except:
+            return HttpResponse(status=404)
+        todo.delete()
+        return HttpResponse(status=204)
+
 
 def index(request):
     return HttpResponse("Hello world!!")
