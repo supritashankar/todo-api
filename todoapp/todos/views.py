@@ -34,7 +34,6 @@ class TodoView(APIView):
 class TodoDetailView(APIView):
 
     def get(self, request, todo_id):
-        print 'HERE', todo_id
         try:
             todo = Todo.objects.get(id=todo_id)
         except:
@@ -42,8 +41,18 @@ class TodoDetailView(APIView):
         serializer = TodoSerializer(todo, context={'request': request})
         return Response(serializer.data)
 
+    def put(self, request, todo_id):
+            try:
+                todo = Todo.objects.get(id=todo_id)
+            except:
+                return HttpResponse(status=404)
+            serializer = TodoSerializer(todo, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, todo_id):
-        print todo_id
         try:
             todo = Todo.objects.get(id=todo_id)
         except:
