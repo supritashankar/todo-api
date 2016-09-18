@@ -2,3 +2,5 @@ Django==1.6.2
 South==1.0.2
 requests==2.11.1
 djangorestframework==3.4.6
+py==1.4.31
+pytest==3.0.2
