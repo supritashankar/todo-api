@@ -1,30 +1,36 @@
-from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from serializers import UserSerializer, TodoSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from serializers import UserSerializer, TodoSerializer
 from models import Todo
 
 class UserViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+        API endpoint that allows users to be viewed or edited.
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
 class TodoView(APIView):
     """
-    API endpoint that allows todos to be viewed or edited
+        API endpoint that allows todos to be viewed or created
     """
     def get(self, request, format=None):
+        """
+            To see all the todos
+        """
         todos = Todo.objects.all()
         serializer = TodoSerializer(todos, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        """
+            To add a new todo
+        """
         serializer = TodoSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -32,8 +38,14 @@ class TodoView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TodoDetailView(APIView):
+    """
+        API Endpoint that allows to update and delete todos
+    """
 
     def get(self, request, todo_id):
+        """
+            To get the detailed view of a resource
+        """
         try:
             todo = Todo.objects.get(id=todo_id)
         except:
@@ -42,24 +54,26 @@ class TodoDetailView(APIView):
         return Response(serializer.data)
 
     def put(self, request, todo_id):
-            try:
-                todo = Todo.objects.get(id=todo_id)
-            except:
-                return HttpResponse(status=404)
-            serializer = TodoSerializer(todo, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        """
+            To update a resource
+        """
+        try:
+            todo = Todo.objects.get(id=todo_id)
+        except:
+            return HttpResponse(status=404)
+        serializer = TodoSerializer(todo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, todo_id):
+        """
+            To delete a resource
+        """
         try:
             todo = Todo.objects.get(id=todo_id)
         except:
             return HttpResponse(status=404)
         todo.delete()
         return HttpResponse(status=204)
-
-
-def index(request):
-    return HttpResponse("Hello world!!")
