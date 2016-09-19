@@ -4,7 +4,11 @@
 - Install virtualenv
 - source djangodev/bin/activate
 - pip install requirements.txt
-- cd todoapp
+- cd todoap
+- python manage.py migrate
+- python manage.py makemigrations polls
+- python manage.py sqlmigrate todos 0001
+- python manage.py migrate
 - python manage.py createsuperuser
 - python manage.py runserver
 - Open browser and hit 127.0.0.1:8000/todos/
